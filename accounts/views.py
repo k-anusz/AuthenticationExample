@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegistrationForm
+
+
 # from django.contrib import messages
 
 
@@ -60,3 +62,9 @@ def logout_view(request):
     logout(request)
     # redirect the user to index page
     return redirect('index')
+
+
+def money_tracker_view(request):
+    # redirect the user to money tracker page
+    return render(request, 'accounts/money-tracker.html')
+

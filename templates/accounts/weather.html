@@ -1,0 +1,55 @@
+{% extends 'accounts/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Weather
+{% endblock %}
+{% block body %}
+
+<body>
+    <p class="h1 text-capitalize text-info row justify-content-md-center m-4">Check the weather!</p>
+    <section>
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col-12">
+                    <form method="POST">
+                        {% csrf_token %}
+                            <div class="input-group mb-3">
+                                {{ form.name }}
+                              <div class="input-group-append">
+                                <button class="btn btn-primary" type="submit">Add City</button>
+                              </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="col col-lg-4">
+                    <!-- Each city gets its own box, which is why we have a for loop here  -->
+                    {% for city_weather in weather_data %}
+                    <div class="card m-3 p-2">
+                        <article class="media">
+                                <div class="m-2">
+                                    <img src="http://openweathermap.org/img/w/{{city_weather.icon}}.png" alt="Image">
+                                </div>
+                                <div class="ml-2">
+                                    <!-- Using what we made in the dictionary -->
+                                    <p>
+                                        <h5 class="card-title">{{city_weather.city}}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">{{city_weather.temperature}} F</h6>
+                                        <p class="card-text">{{city_weather.description}}</p>
+                                    </p>
+                                </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

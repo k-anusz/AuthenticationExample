@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import ModelForm, TextInput
 from .models import City
+from .models import Bank
+from .models import BankAccount
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -19,3 +21,21 @@ class CityForm(ModelForm):
         model = City
         fields = ['name']
         widgets = {'name': TextInput(attrs={'class': 'input form-control', 'placeholder': 'City Name'})}
+
+
+# form for bank input
+class BankForm(ModelForm):
+    class Meta:
+        model = Bank
+        fields = ['bankName', 'balance']
+        widgets = {'bankName': TextInput(attrs={'class': 'input form-control', 'placeholder': 'Bank Name'}),
+                   'balance': TextInput(attrs={'class': 'input form-control', 'placeholder': 'Balance'})}
+
+
+# form for account transaction input
+class AccountForm(ModelForm):
+    class Meta:
+        model = BankAccount
+        fields = ['bankId', 'transactionName', 'transactionAmount']
+        widgets = {'transactionName': TextInput(attrs={'class': 'input form-control', 'placeholder': 'Transaction Name'}),
+                   'transactionAmount': TextInput(attrs={'class': 'input form-control', 'placeholder': 'Amount'})}

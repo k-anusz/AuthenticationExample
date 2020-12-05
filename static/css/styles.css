@@ -10,3 +10,17 @@ form > .alert > ul > li{
     list-style: none;
 }
 
+.accounts-table{
+    border: 1px solid silver;
+    border-radius: 0.25rem;
+    background-color: white;
+    margin: 10px;
+    padding: 10px;
+}
+
+.account-row{
+
+    border-radius: 0.25rem;
+    margin: 1px;
+    padding: 5px;
+}

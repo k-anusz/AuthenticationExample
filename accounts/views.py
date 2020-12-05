@@ -4,7 +4,11 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from .models import City
+from .models import Bank
+from .models import BankAccount
 from .forms import CityForm
+from .forms import BankForm
+from .forms import AccountForm
 from .forms import UserRegistrationForm
 
 
@@ -67,9 +71,85 @@ def logout_view(request):
     return redirect('index')
 
 
+# view
 def money_tracker_view(request):
     # direct the user to money tracker page
-    return render(request, 'accounts/money-tracker.html')
+    banks = Bank.objects.all()
+    context = {'banks': banks}
+    return render(request, 'accounts/money-tracker.html', context)
+
+
+# add
+def add_bank(request):
+    # Create a form instance and populate it with data from the request
+    form = BankForm(request.POST or None)
+
+    # if request.method == 'POST':
+    # check whether it's valid:
+    if form.is_valid():
+        # save the record into the db
+        form.save()
+        print('form valid: true')
+    else:
+        print('form valid: false')
+        print(form.errors)
+
+    # after saving redirect to money-tracker page
+    return redirect('money-tracker')
+
+
+# view
+def view_account(request, id):
+    # direct the user to money tracker page
+    account = Bank.objects.get(id=id)
+    transactions = BankAccount.objects.all().filter(bankId=id)
+    context = {'account': account, 'transactions': transactions}
+    return render(request, 'accounts/accounts.html', context)
+
+
+# add
+def add_transaction(request, id):
+    # Create a form instance and populate it with data from the request
+    form = AccountForm(request.POST or None)
+    form2 = BankForm(request.POST or None)
+
+    if request.method == 'POST':
+        # check whether it's valid:
+        if form.is_valid():
+            # save the record into the db
+            form.save()
+            print('form valid: true')
+        else:
+            print('form valid: false')
+            print(form.errors)
+        # this is currently broken, creates a new bank record instead of updating balance on exisiting record
+        # if form2.is_valid():
+        #     # save the record into the db
+        #     form2.save()
+        #     print('form2 valid: true')
+        # else:
+        #     print('form2 valid: false')
+        #     print(form2.errors)
+
+
+
+    # after saving redirect to money-tracker page
+    return redirect('/account/' + str(id))
+
+
+# view
+def delete_account(request, id):
+    # Get the bank account based on its id
+    bank = Bank.objects.get(id=id)
+
+    # if this is a POST request, we need to delete the form data
+    if request.method == 'POST':
+        bank.delete()
+        # direct the user to money tracker page
+        return redirect('money-tracker')
+
+    # if the request is not post, render the page with the task's info
+    return render(request, 'accounts/delete.html', {'bank': bank})
 
 
 def weather_view(request):
@@ -117,3 +197,9 @@ def weather_view(request):
     context = {'weather_data': weather_data, 'form': form}
     # direct the user to weather page
     return render(request, 'accounts/weather.html', context)
+
+
+def account_view(request):
+    account = BankAccount.objects.all()
+    context = {'account': account}
+    return render(request, 'accounts/account.html', context)

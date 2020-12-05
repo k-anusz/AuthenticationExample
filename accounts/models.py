@@ -14,3 +14,26 @@ class City(models.Model):
     # this is helpful for visual display when using the admin dashboard
     class Meta:
         verbose_name_plural = 'cities'
+
+
+# This is our table in our database, it allows us to store a bunch of bank names and balance in the table
+class Bank(models.Model):
+    bankName = models.CharField(max_length=50)
+    balance = models.FloatField(default=0.0)
+
+
+# This is our table in our database, it allows us to store a bunch of
+# bank account transactions names and amounts in the table
+class BankAccount(models.Model):
+    bankId = models.IntegerField(default=73)
+    transactionName = models.CharField(max_length=50)
+    transactionAmount = models.FloatField(default=0.0)
+    transaction_date = models.DateTimeField(auto_now_add=True, blank=True)
+
+
+
+
+
+
+
+

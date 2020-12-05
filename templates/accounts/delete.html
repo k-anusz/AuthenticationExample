@@ -1,0 +1,22 @@
+{% extends 'accounts/index.html' %}
+
+{% block title %}
+{% endblock %}
+
+{% block body %}
+
+    <form method="post" action="{% url 'delete_account' bank.id %}">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-header">Delete Account</div>
+            <div class="card-body">
+                <h5>Are you sure that you want to delete account
+                <span class="badge badge-danger ">{{ bank.bankName }}</span>?</h5>
+                <a href="{% url 'money-tracker' %}" class="btn btn-info">No, go Back</a>
+                <button type="submit" class="btn btn-danger">Yes, delete</button>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock %}

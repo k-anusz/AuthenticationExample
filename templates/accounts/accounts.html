@@ -1,0 +1,130 @@
+{% extends 'accounts/index.html' %}
+
+{% block title %}
+{% endblock %}
+
+{% block body %}
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script>
+            //global scope
+            var bal = {{ account.balance }};
+            var netChange = 0.0;
+        </script>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="post" id='newTransForm' action="{% url 'add_transaction' account.id%}"  role="form" >
+                        <div class="input-group">
+                            {% csrf_token %}
+                            {{  form.BankAccount.transactionName  }}
+                            <input type="text" class="form-control" id="transactionName" name="transactionName"  placeholder="Transaction name" aria-label="Transaction Name" aria-describedby="button-addon2">
+                            {{  form.BankAccount.transactionAmount  }}
+                            <input type="text" class="form-control" id="transactionAmount" name="transactionAmount"  placeholder="Amount" aria-label="transactionAmount" aria-describedby="button-addon2">
+                            {{  form.BankAccount.bankId  }}
+                            <input type="hidden" class="form-control" id="bankId" name="bankId" value = {{ account.id}} placeholder="Amount" aria-label="transactionAmount" aria-describedby="button-addon2"/>
+
+                            {{  form.Bank.bankId  }}
+                            <input type="hidden" class="form-control" id="bankId" name="bankId" value={{ account.id }} placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2"/>
+                            {{  form.Bank.bankName  }}
+                            <input type="hidden" class="form-control" id="bankName" name="bankName" value={{ account.bankName }} placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2"/>
+                            {{  form.Bank.balance  }}
+                            <input type="hidden" class="form-control" id="balance" name="balance" value={{ account.balance }} placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2"/>
+
+                            <span class="input-group-btn">
+                            <button type="submit" class="btn btn-primary"> ADD </button>
+                            </span>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="card-header">Transactions for account: <b>{{ account.bankName }}</b></div>
+            <div class="card-body mr-3">
+
+            <form method="post" action="{% url 'view_account' account.id %}">
+                {% csrf_token %}
+            </form>
+
+             <div class="container mt-3 accounts-table">
+             <div class="row account-row">
+                    <div class="col">
+                        <div class="row h5"><b>Starting Balance</b></div>
+                    </div>
+
+                    <div class="col">
+                        <div class="row row-buttons justify-content-end pr-5">
+                            {% if account.balance < 0 %}
+                                <div class="row text-danger h5"> ${{ account.balance }}</div>
+                            {% else %}
+                                <div class="row text-success h5">${{ account.balance }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <hr>
+
+                {% for transaction in transactions %}
+                <div class="row account-row">
+                    <div class="col">
+                        <div class="row h5"><b>{{ transaction.transactionName }}</b></div>
+                        <div class="row">{{ transaction.transaction_date }}</div>
+
+                     </div>
+
+                    <div class="col">
+                        <div class="row row-buttons justify-content-end pr-5">
+                            {% if transaction.transactionAmount < 0 %}
+                                <div class="row text-danger h5">${{ transaction.transactionAmount }}</div>
+                            {% else %}
+                                <div class="row text-success h5">${{ transaction.transactionAmount }}</div>
+                            {% endif %}
+
+                        <script>
+                            $(document).ready(function(){
+                            // Write your JavaScript code here
+                            console.log("The page is ready!");
+                            bal += {{ transaction.transactionAmount }}
+                            netChange += {{ transaction.transactionAmount }}
+                            $('#totalBal').text('Total Balance: $' + bal.toFixed(2).toString())
+
+                             if(netChange >= 0){
+                                 $('#netChange').css('color','green').text('+$' + netChange.toFixed(2).toString())
+                             }
+                             else{
+                                 $('#netChange').css('color','red').text(' $' + netChange.toFixed(2).toString())
+                             }
+
+                            });
+
+                        </script>
+
+                        </div>
+                    </div>
+
+                </div>
+                <hr>
+             {% endfor %}
+             </div>
+
+            </div>
+            <div class="card-footer">
+                <div class="row justify-content-end pr-3">
+                <span>Net Change:&nbsp</span> <span id="netChange">$0.00</span>
+                </div>
+
+                <div class="row justify-content-end pr-3">
+                    <p id="totalBal">Total Balance: $ {{ account.balance }}</p>
+                </div>
+
+                <div class="row justify-content-end pr-3">
+                    <a href="{% url 'money-tracker' %}" class="btn btn-info">Return</a>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

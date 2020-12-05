@@ -1,5 +1,5 @@
 {% extends 'accounts/base.html' %}
-
+{% load crispy_forms_tags %}
 
 {% block title %}
     Money Tracker
@@ -7,7 +7,61 @@
 
 {% block body %}
 
-        <h1 class="display-4 text-capitalize text-info">Welcome to Kamil and Dan's Money Tracker!</h1>
+    <h1 class="display-4 text-capitalize text-info">Welcome to Kamil and Dan's Money Tracker!</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form id="new_bank_form" method="post" action="{% url 'add_bank' %}"  role="form" >
+                    <div class="input-group">
+                        {% csrf_token %}
+                        {{  form.Bank.bankName  }}
+                        <input type="text" class="form-control" id="bankName" name="bankName"  placeholder="Add bank name" aria-label="Add bank name" aria-describedby="button-addon2">
+                        {{  form.Bank.balance  }}
+                        <input type="text" class="form-control" id="balance" name="balance"  placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2">
+
+                        <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary"> ADD </button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-3 accounts-table">
+        {% for bank in banks %}
+            <div class="row account-row">
+                <div class="col">
+                    <div class="row h6"><b>{{ bank.bankName }}</b></div>
+
+                    {% if bank.balance < 0 %}
+                        <div class="row text-danger h6"> ${{ bank.balance }}</div>
+                    {% else %}
+                        <div class="row text-success h6">${{ bank.balance }}</div>
+                    {% endif %}
+
+
+                 </div>
+
+                <div class="col">
+                    <div class="row row-buttons justify-content-end">
+
+                        <a href="{% url 'view_account' bank.id %}">
+                            <button type="button" class="btn btn-primary ml-1">View</button>
+                        </a>
+
+                        <a href="{% url 'delete_account' bank.id %}">
+                            <button type="button" class="btn btn-danger ml-1">Delete</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <hr>
+
+        {% endfor %}
+    </div>
+
+
 
 
 {% endblock %}

@@ -72,6 +72,7 @@ def logout_view(request):
 
 
 # view
+@login_required(login_url='login')
 def money_tracker_view(request):
     # direct the user to money tracker page
     banks = Bank.objects.all()
@@ -152,6 +153,7 @@ def delete_account(request, id):
     return render(request, 'accounts/delete.html', {'bank': bank})
 
 
+@login_required(login_url='login')
 def weather_view(request):
     # the api url for getting the weather data
     # {} is a placeholder for the city we will query for

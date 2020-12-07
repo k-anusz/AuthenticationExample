@@ -81,6 +81,7 @@ def money_tracker_view(request):
 
 
 # add
+@login_required(login_url='login')
 def add_bank(request):
     # Create a form instance and populate it with data from the request
     form = BankForm(request.POST or None)
@@ -100,6 +101,7 @@ def add_bank(request):
 
 
 # view
+@login_required(login_url='login')
 def view_account(request, id):
     # direct the user to money tracker page
     account = Bank.objects.get(id=id)
@@ -109,6 +111,7 @@ def view_account(request, id):
 
 
 # add
+@login_required(login_url='login')
 def add_transaction(request, id):
     # Create a form instance and populate it with data from the request
     form = AccountForm(request.POST or None)
@@ -132,13 +135,12 @@ def add_transaction(request, id):
         #     print('form2 valid: false')
         #     print(form2.errors)
 
-
-
     # after saving redirect to money-tracker page
     return redirect('/account/' + str(id))
 
 
 # view
+@login_required(login_url='login')
 def delete_account(request, id):
     # Get the bank account based on its id
     bank = Bank.objects.get(id=id)
@@ -159,11 +161,42 @@ def weather_view(request):
     # {} is a placeholder for the city we will query for
     url = 'http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial&appid=f1fe354b524a9755272446c089aaae23'
 
+    err_msg = ''
+    # message holds the message that the user sees
+    message = ''
+    # message_class holds a css class for the color of the message area
+    message_class = ''
+
     if request.method == 'POST':
         # instantiates the form using the request data
         form = CityForm(request.POST)
-        # validates and saves to the database
-        form.save()
+
+        # checks if the city input is valid
+        if form.is_valid():
+            # this is the city name that is input by the user in the front end
+            new_city = form.cleaned_data['name']
+            # we query the database to make sure that there are no cities with the same name
+            # because we dont want duplicate cities being added
+            existing_city_count = City.objects.filter(name=new_city).count()
+            # if the existing city count is 0 then it is added to the database
+            if existing_city_count == 0:
+                # r returns the data for the city that gets added
+                r = requests.get(url.format(new_city)).json()
+                # response 200 means success status from the api.
+                # so if the city name entered is valid it will save to the database
+                if r['cod'] == 200:
+                    # validates and saves to the database
+                    form.save()
+                else:
+                    err_msg = 'Error, The City entered is not a valid City name!'
+            else:
+                err_msg = 'Error, you already have this city in your list!'
+        if err_msg:
+            message = err_msg
+            message_class = 'p-3 mb-2 bg-danger text-white rounded'
+        else:
+            message = 'City has been added successfully!'
+            message_class = 'p-3 mb-2 bg-success text-white rounded'
 
     # instantiates the form
     # this goes under the request.method == 'POST' because it allows for it to be blank after it has been submitted
@@ -196,11 +229,25 @@ def weather_view(request):
         # appends the city weather dictionary that we create for each city
         weather_data.append(city_weather)
 
-    context = {'weather_data': weather_data, 'form': form}
+    context = {
+        'weather_data': weather_data,
+        'form': form,
+        'message': message,
+        'message_class': message_class
+    }
     # direct the user to weather page
     return render(request, 'accounts/weather.html', context)
 
 
+@login_required(login_url='login')
+def delete_city(request, city_name):
+    # queries for the city and deletes it
+    City.objects.get(name=city_name).delete()
+    # redirect the user to weather page
+    return redirect('weather')
+
+
+@login_required(login_url='login')
 def account_view(request):
     account = BankAccount.objects.all()
     context = {'account': account}

@@ -7,14 +7,15 @@
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script>
             //global scope
-            var bal = {{ account.balance }};
+            var endBal = 0.0;
+            var startBal = {{account.startBal}};
             var netChange = 0.0;
         </script>
 
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <form method="post" id='newTransForm' action="{% url 'add_transaction' account.id%}"  role="form" >
+                    <form method="post" id='newTransForm' action="{% url 'add_transaction' account.id %}"  role="form" >
                         <div class="input-group">
                             {% csrf_token %}
                             {{  form.BankAccount.transactionName  }}
@@ -23,13 +24,6 @@
                             <input type="text" class="form-control" id="transactionAmount" name="transactionAmount"  placeholder="Amount" aria-label="transactionAmount" aria-describedby="button-addon2">
                             {{  form.BankAccount.bankId  }}
                             <input type="hidden" class="form-control" id="bankId" name="bankId" value = {{ account.id}} placeholder="Amount" aria-label="transactionAmount" aria-describedby="button-addon2"/>
-
-                            {{  form.Bank.bankId  }}
-                            <input type="hidden" class="form-control" id="bankId" name="bankId" value={{ account.id }} placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2"/>
-                            {{  form.Bank.bankName  }}
-                            <input type="hidden" class="form-control" id="bankName" name="bankName" value={{ account.bankName }} placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2"/>
-                            {{  form.Bank.balance  }}
-                            <input type="hidden" class="form-control" id="balance" name="balance" value={{ account.balance }} placeholder="Balance" aria-label="Balance" aria-describedby="button-addon2"/>
 
                             <span class="input-group-btn">
                             <button type="submit" class="btn btn-primary"> ADD </button>
@@ -46,10 +40,6 @@
             <div class="card-header">Transactions for account: <b>{{ account.bankName }}</b></div>
             <div class="card-body mr-3">
 
-            <form method="post" action="{% url 'view_account' account.id %}">
-                {% csrf_token %}
-            </form>
-
              <div class="container mt-3 accounts-table">
              <div class="row account-row">
                     <div class="col">
@@ -58,10 +48,10 @@
 
                     <div class="col">
                         <div class="row row-buttons justify-content-end pr-5">
-                            {% if account.balance < 0 %}
-                                <div class="row text-danger h5"> ${{ account.balance }}</div>
+                            {% if account.startBal < 0 %}
+                                <div class="row text-danger h5" id="startingBal"> ${{ account.startBal|floatformat:2  }}</div>
                             {% else %}
-                                <div class="row text-success h5">${{ account.balance }}</div>
+                                <div class="row text-success h5" id="startingBal">${{ account.startBal|floatformat:2  }}</div>
                             {% endif %}
                         </div>
                     </div>
@@ -78,18 +68,34 @@
                     <div class="col">
                         <div class="row row-buttons justify-content-end pr-5">
                             {% if transaction.transactionAmount < 0 %}
-                                <div class="row text-danger h5">${{ transaction.transactionAmount }}</div>
+                                <div class="row text-danger h5">${{ transaction.transactionAmount|floatformat:2 }}</div>
                             {% else %}
-                                <div class="row text-success h5">${{ transaction.transactionAmount }}</div>
+                                <div class="row text-success h5">${{ transaction.transactionAmount|floatformat:2 }}</div>
                             {% endif %}
 
                         <script>
                             $(document).ready(function(){
                             // Write your JavaScript code here
                             console.log("The page is ready!");
-                            bal += {{ transaction.transactionAmount }}
+                            let prevBal = endBal;
                             netChange += {{ transaction.transactionAmount }}
-                            $('#totalBal').text('Total Balance: $' + bal.toFixed(2).toString())
+                            endBal = startBal + netChange
+                            $('#totalBal').text('Total Balance: $' + (endBal).toFixed(2).toString())
+
+                            let form =  $("#return_btn").attr('href');
+                            let prevBalLen = prevBal.toFixed(2).toString().length - 1
+                                
+                            if(form.substring(form.length-startBal.toFixed(2).toString().length-1, form.length ) === ("/"+startBal.toFixed(2).toString())){
+                                form = form.substring(0, form.length-startBal.toFixed(2).toString().length);
+                            }
+                            else{
+                                form = form.substring(0, form.length-prevBalLen-1);
+                            }
+
+                            form += (endBal.toFixed(2));
+                            console.log('before: '+ $("#return_btn").attr('href'));
+                            $("#return_btn").attr('href', form.toString());
+                            console.log('after: '+ $("#return_btn").attr('href'));
 
                              if(netChange >= 0){
                                  $('#netChange').css('color','green').text('+$' + netChange.toFixed(2).toString())
@@ -122,11 +128,11 @@
                 </div>
 
                 <div class="row justify-content-end pr-3">
-                    <p id="totalBal">Total Balance: $ {{ account.balance }}</p>
+                    <p id="totalBal">Total Balance: $ {{ account.balance|floatformat:2  }}</p>
                 </div>
 
                 <div class="row justify-content-end pr-3">
-                    <a href="{% url 'money-tracker' %}" class="btn btn-info">Return</a>
+                    <a id="return_btn" href="{% url 'money-tracker-bal' account.id account.startBal|floatformat:2%}" class="btn btn-info">Return</a>
                 </div>
             </div>
         </div>

@@ -90,11 +90,14 @@ def add_bank(request):
     # check whether it's valid:
     if form.is_valid():
         # save the record into the db
-        form.save()
+        newbank = Bank(userId=request.POST.get('userId'), bankName=request.POST.get('bankName'), balance=request.POST.get('balance'), startBal=request.POST.get('balance'))
+        newbank.save()
         print('form valid: true')
     else:
         print('form valid: false')
         print(form.errors)
+
+
 
     # after saving redirect to money-tracker page
     return redirect('money-tracker')
@@ -115,8 +118,6 @@ def view_account(request, id):
 def add_transaction(request, id):
     # Create a form instance and populate it with data from the request
     form = AccountForm(request.POST or None)
-    form2 = BankForm(request.POST or None)
-
     if request.method == 'POST':
         # check whether it's valid:
         if form.is_valid():
@@ -126,17 +127,21 @@ def add_transaction(request, id):
         else:
             print('form valid: false')
             print(form.errors)
-        # this is currently broken, creates a new bank record instead of updating balance on exisiting record
-        # if form2.is_valid():
-        #     # save the record into the db
-        #     form2.save()
-        #     print('form2 valid: true')
-        # else:
-        #     print('form2 valid: false')
-        #     print(form2.errors)
 
     # after saving redirect to money-tracker page
     return redirect('/account/' + str(id))
+
+
+# update
+@login_required(login_url='login')
+def money_tracker_bal(request, id, newbal):
+    print('inside money tracker bal' + str(id) + str(newbal))
+    account = Bank.objects.get(id=id)
+    account.balance = newbal
+    account.save()
+
+    # after saving redirect to money-tracker page
+    return redirect('money-tracker')
 
 
 # view

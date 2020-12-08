@@ -27,7 +27,7 @@ class CityForm(ModelForm):
 class BankForm(ModelForm):
     class Meta:
         model = Bank
-        fields = ['bankName', 'balance']
+        fields = ['userId', 'bankName', 'balance', 'startBal']
         widgets = {'bankName': TextInput(attrs={'class': 'input form-control', 'placeholder': 'Bank Name'}),
                    'balance': TextInput(attrs={'class': 'input form-control', 'placeholder': 'Balance'})}
 

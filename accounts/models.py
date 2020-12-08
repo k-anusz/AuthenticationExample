@@ -18,8 +18,10 @@ class City(models.Model):
 
 # This is our table in our database, it allows us to store a bunch of bank names and balance in the table
 class Bank(models.Model):
+    userId = models.IntegerField(default=73)
     bankName = models.CharField(max_length=50)
     balance = models.FloatField(default=0.0)
+    startBal = models.FloatField(default=0.0)
 
 
 # This is our table in our database, it allows us to store a bunch of

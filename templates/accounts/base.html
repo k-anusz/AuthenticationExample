@@ -39,9 +39,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'weather'%}">Weather</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Contact Us</a>
-                </li>
             </ul>
 
             {% if user.is_authenticated %}
@@ -51,8 +48,6 @@
                 <a class="btn btn-light" href={% url 'register' %}>Register</a>
             {% endif %}
         </div>
-
-
 
     </div>
 </nav>

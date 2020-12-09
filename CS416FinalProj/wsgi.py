@@ -1,5 +1,5 @@
 """
-WSGI config for AuthenticationExample project.
+WSGI config for CS416FinalProj project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'AuthenticationExample.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'CS416FinalProj.settings')
 
 application = get_wsgi_application()

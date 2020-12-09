@@ -132,6 +132,17 @@ def add_transaction(request, id):
     return redirect('/account/' + str(id))
 
 
+# delete
+@login_required(login_url='login')
+def delete_transaction(request, id):
+    # queries for the city and deletes it
+    transaction = BankAccount.objects.get(id=id)
+    bank_id = transaction.bankId
+    transaction.delete()
+    # redirect the user to weather page
+    return redirect('/account/' + str(bank_id))
+
+
 # update
 @login_required(login_url='login')
 def money_tracker_bal(request, id, newbal):

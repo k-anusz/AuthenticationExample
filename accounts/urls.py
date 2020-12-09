@@ -13,5 +13,6 @@ urlpatterns = [
     path('account/<int:id>', views.view_account, name='view_account'),
     path('transaction/<int:id>', views.add_transaction, name='add_transaction'),
     path('money-tracker-bal/<int:id>/<str:newbal>', views.money_tracker_bal, name='money-tracker-bal'),
-    path('delete-account/<int:id>', views.delete_account, name='delete_account')
+    path('delete-account/<int:id>', views.delete_account, name='delete_account'),
+    path('delete-transaction/<int:id>', views.delete_transaction, name='delete_transaction')
 ]
